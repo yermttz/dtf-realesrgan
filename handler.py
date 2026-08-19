@@ -29,6 +29,18 @@ def download_image(url, path):
 
 def handler(job):
 
+gpu_info = subprocess.run(
+    ["vulkaninfo", "--summary"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    text=True,
+    timeout=30
+)
+
+print("=== VULKAN INFO ===")
+print(gpu_info.stdout)
+print("===================")
+
     data = job["input"]
 
     image_url = data.get("image_url")
