@@ -1,29 +1,27 @@
-FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
+FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV NVIDIA_VISIBLE_DEVICES=all
-ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
-ENV VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json
 
+# Instalar dependencias del sistema necesarias para OpenCV y procesamiento de imágenes
 RUN apt-get update && apt-get install -y \
-    python3 \
-    python3-pip \
-    libvulkan1 \
-    vulkan-tools \
-    mesa-vulkan-drivers \
-    libgl1-mesa-dri \
+    git \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY realesrgan-ncnn-vulkan /app/realesrgan-ncnn-vulkan
-COPY models /app/models
-COPY handler.py /app/handler.py
-
-RUN chmod +x /app/realesrgan-ncnn-vulkan
-
+# Instalar librerías de Python para Real-ESRGAN y RunPod
 RUN pip3 install --no-cache-dir \
     runpod \
-    requests
+    requests \
+    opencv-python \
+    pillow \
+    torchvision \
+    basicsr \
+    realesrgan
 
-CMD ["python3", "/app/handler.py"]
+# Copiar el handler de Python
+COPY handler.py /app/handler.py
+
+CMD ["python3", "-u", "/app/handler.py"]
