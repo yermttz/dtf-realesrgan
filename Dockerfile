@@ -1,8 +1,9 @@
-FROM nvidia/cuda:12.4.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics
+ENV VK_ICD_FILENAMES=/etc/vulkan/icd.d/nvidia_icd.json
 
 RUN apt-get update && apt-get install -y \
     python3 \
@@ -10,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libvulkan1 \
     vulkan-tools \
     mesa-vulkan-drivers \
-    libnvidia-gl-550 \
+    libgl1-mesa-dri \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
