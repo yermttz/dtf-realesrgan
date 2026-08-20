@@ -1,7 +1,6 @@
 FROM pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PORT=8000
 ENV TMP_DIR=/tmp
 ENV WEIGHTS_DIR=/app/weights
 
@@ -14,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-# Instalar librerías de Python para Real-ESRGAN y el servidor HTTP
+# Instalar librerías de Python para Real-ESRGAN y RunPod Serverless
 RUN pip3 install --no-cache-dir \
     runpod \
     requests \
@@ -22,12 +21,9 @@ RUN pip3 install --no-cache-dir \
     pillow \
     torchvision \
     basicsr \
-    realesrgan \
-    fastapi \
-    uvicorn \
-    python-multipart
+    realesrgan
 
-COPY handler.py http_app.py config.py validation.py processor.py callback.py pipeline.py public_errors.py logging_utils.py /app/
+COPY handler.py config.py validation.py processor.py callback.py pipeline.py downloader.py public_errors.py logging_utils.py /app/
 RUN mkdir -p /app/weights /tmp
 
 CMD ["python3", "-u", "/app/handler.py"]

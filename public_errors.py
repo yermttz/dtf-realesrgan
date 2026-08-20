@@ -17,8 +17,8 @@ _INFRA_MARKERS = (
     "traceback",
     "pytorch",
     "basicsr",
-    "uvicorn",
-    "fastapi",
+        "uvicorn",
+        "fastapi",
 )
 
 

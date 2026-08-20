@@ -35,6 +35,9 @@ def send_png_result(
     if not callback_url:
         safe_log(job_id, "callback not configured")
         raise CallbackError(PUBLIC_FAIL_MESSAGE)
+    if not callback_url.lower().startswith("https://"):
+        safe_log(job_id, "callback not https")
+        raise CallbackError(PUBLIC_FAIL_MESSAGE)
     if not png_bytes:
         safe_log(job_id, "empty result")
         raise CallbackError(PUBLIC_FAIL_MESSAGE)

@@ -33,7 +33,7 @@ def test_callback_posts_png_multipart(monkeypatch):
     monkeypatch.setattr(requests, "post", fake_post)
     png = png_bytes(64, 48)
     result = send_png_result(
-        callback_url="http://kanonico.test/dtf/api/images/upscale/result",
+        callback_url="https://kanonico.test/dtf/api/images/upscale/result",
         callback_secret=CALLBACK_SECRET,
         timeout_sec=30,
         job_id=JOB_ID,
