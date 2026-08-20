@@ -5,3 +5,6 @@ __pycache__/
 *.png
 *.webp
 /tmp/
+weights/*.pth
+.env
+.pytest_cache/
