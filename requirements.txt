@@ -1,2 +1,3 @@
-requests
-pillow
+# Local/unit-test deps only. Torch, torchvision, Real-ESRGAN and CUDA are pinned in the Dockerfile.
+requests==2.32.4
+pillow==11.1.0

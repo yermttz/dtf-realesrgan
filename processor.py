@@ -6,9 +6,16 @@ import os
 import threading
 from typing import Protocol
 
+from torchvision_compat import apply_torchvision_shim
+
+apply_torchvision_shim()
+
 import numpy as np
 import torch
 from PIL import Image
+
+from cuda_compat import assert_cuda_ready
+
 try:
     from basicsr.archs.rrdbnet_arch import RRDBNet
 except ImportError:  # pragma: no cover - package path varies by version
@@ -32,6 +39,7 @@ class ImageProcessor(Protocol):
 
 class RealEsrganProcessor:
     def __init__(self, weights_dir: str, tile_size: int = 128):
+        assert_cuda_ready()
         self.weights_dir = weights_dir
         self.tile_size = tile_size
         self._lock = threading.Lock()
@@ -81,7 +89,7 @@ class RealEsrganProcessor:
             tile=self.tile_size,
             tile_pad=10,
             pre_pad=0,
-            half=torch.cuda.is_available(),
+            half=True,
         )
         self._upsamplers[model] = upsampler
         return upsampler
