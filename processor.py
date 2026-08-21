@@ -15,21 +15,13 @@ import torch
 from PIL import Image
 
 from cuda_compat import assert_cuda_ready
+from model_weights import resolve_model_path
 
 try:
     from basicsr.archs.rrdbnet_arch import RRDBNet
 except ImportError:  # pragma: no cover - package path varies by version
     from basicsr.archs.rrdbnet_archs import RRDBNet
 from realesrgan import RealESRGANer
-
-ANIME_WEIGHTS_URL = (
-    "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/"
-    "RealESRGAN_x4plus_anime_6B.pth"
-)
-NORMAL_WEIGHTS_URL = (
-    "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/"
-    "RealESRGAN_x4plus.pth"
-)
 
 
 class ImageProcessor(Protocol):
@@ -44,7 +36,6 @@ class RealEsrganProcessor:
         self.tile_size = tile_size
         self._lock = threading.Lock()
         self._upsamplers: dict[str, RealESRGANer] = {}
-        os.makedirs(self.weights_dir, exist_ok=True)
 
     def enhance(self, input_path: str, output_path: str, model: str, scale: int) -> tuple[int, int, int, int]:
         with Image.open(input_path) as img:
@@ -71,17 +62,12 @@ class RealEsrganProcessor:
             model_arch = RRDBNet(
                 num_in_ch=3, num_out_ch=3, num_feat=64, num_block=6, num_grow_ch=32, scale=4
             )
-            file_url = ANIME_WEIGHTS_URL
-            local_name = "RealESRGAN_x4plus_anime_6B.pth"
         else:
             model_arch = RRDBNet(
                 num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4
             )
-            file_url = NORMAL_WEIGHTS_URL
-            local_name = "RealESRGAN_x4plus.pth"
 
-        local_path = os.path.join(self.weights_dir, local_name)
-        model_path = local_path if os.path.isfile(local_path) else file_url
+        model_path = resolve_model_path(self.weights_dir, model)
         upsampler = RealESRGANer(
             scale=4,
             model_path=model_path,

@@ -38,7 +38,10 @@ RUN pip3 install --no-cache-dir \
 # Fallar el build si pip dejó un torch CPU. sm_120 se valida en runtime con GPU (check_cuda.py).
 RUN python3 -c "import torch, torchvision; v=torch.__version__; assert '+cu128' in v and 'cpu' not in v, v; assert torchvision.__version__.startswith('0.24.1'), torchvision.__version__"
 
-COPY handler.py config.py validation.py processor.py callback.py pipeline.py downloader.py public_errors.py logging_utils.py torchvision_compat.py cuda_compat.py check_cuda.py check_realesrgan.py /app/
-RUN mkdir -p /app/weights /tmp
+COPY handler.py config.py validation.py processor.py callback.py pipeline.py downloader.py public_errors.py logging_utils.py torchvision_compat.py cuda_compat.py model_weights.py check_cuda.py check_realesrgan.py /app/
+COPY weights/ /app/weights/
+RUN test -f /app/weights/RealESRGAN_x4plus.pth \
+ && test -f /app/weights/RealESRGAN_x4plus_anime_6B.pth
+RUN mkdir -p /tmp
 
 CMD ["python3", "-u", "/app/handler.py"]

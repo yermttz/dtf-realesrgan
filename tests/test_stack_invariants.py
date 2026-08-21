@@ -83,5 +83,32 @@ def test_dockerfile_uses_cu128_and_no_pypi_torch():
     assert "--no-deps" in docker
     assert "get_arch_list" not in docker
     assert "numpy==1.26.4" in docker
+    assert "COPY weights/ /app/weights/" in docker
+    assert "torch.cuda.get_arch_list" not in docker
     lines = [line for line in docker.splitlines() if "opencv-python==" in line]
     assert lines == []
+
+
+def test_processor_uses_local_weights_and_keeps_cache():
+    processor = _read("processor.py")
+    weights = _read("model_weights.py")
+    docker = _read("Dockerfile")
+    blob = processor + weights + docker
+    assert "resolve_model_path" in processor
+    assert "github.com/xinntao" not in blob
+    assert "load_file_from_url" not in blob
+    assert "cached = self._upsamplers.get(model)" in processor
+    assert "if cached is not None" in processor
+    assert "self._lock" in processor
+    assert "half=True" in processor
+    assert "tile_pad=10" in processor
+
+
+def test_callback_and_image_url_files_untouched_by_weights_change():
+    assert "image_url" in _read("validation.py")
+    assert "x-kanonico-result-secret" in _read("callback.py")
+    cuda = _read("cuda_compat.py")
+    assert "sm_120" in cuda
+    docker = _read("Dockerfile")
+    assert "2.9.1+cu128" in docker
+    assert "0.24.1+cu128" in docker
