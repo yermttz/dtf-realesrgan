@@ -81,7 +81,7 @@ def test_dockerfile_uses_cu128_and_no_pypi_torch():
     assert "basicsr==1.4.2" in docker
     assert "realesrgan==0.3.0" in docker
     assert "--no-deps" in docker
-    assert "sm_120" in docker
+    assert "get_arch_list" not in docker
     assert "numpy==1.26.4" in docker
     lines = [line for line in docker.splitlines() if "opencv-python==" in line]
     assert lines == []

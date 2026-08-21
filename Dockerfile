@@ -35,8 +35,8 @@ RUN pip3 install --no-cache-dir \
     basicsr==1.4.2 \
     realesrgan==0.3.0
 
-# Fallar el build si pip dejó un torch CPU o un wheel sin sm_120.
-RUN python3 -c "import torch, torchvision; v=torch.__version__; assert '+cu128' in v and 'cpu' not in v, v; assert torchvision.__version__.startswith('0.24.1'), torchvision.__version__; arches=list(torch.cuda.get_arch_list()); assert any(a.replace('compute_','sm_').startswith('sm_120') for a in arches), arches"
+# Fallar el build si pip dejó un torch CPU. sm_120 se valida en runtime con GPU (check_cuda.py).
+RUN python3 -c "import torch, torchvision; v=torch.__version__; assert '+cu128' in v and 'cpu' not in v, v; assert torchvision.__version__.startswith('0.24.1'), torchvision.__version__"
 
 COPY handler.py config.py validation.py processor.py callback.py pipeline.py downloader.py public_errors.py logging_utils.py torchvision_compat.py cuda_compat.py check_cuda.py check_realesrgan.py /app/
 RUN mkdir -p /app/weights /tmp
